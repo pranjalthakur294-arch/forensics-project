@@ -1,0 +1,5 @@
+Forensic Evidence Report
+pcap_file: test_capture.pcap
+pcap_sha256: 6a06222888f7379b46d256d02aee66cf82e75c1b0a340dbf1f04f36eab047b78
+packets: 20
+generated_by: pcap_analyze_extended.py
