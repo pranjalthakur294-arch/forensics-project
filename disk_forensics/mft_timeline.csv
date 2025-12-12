@@ -1,0 +1,13 @@
+timestamp,event,filename,fullpath,flags,deleted
+2024-12-01 10:21:55,created,report.docx,C:\Users\Admin\Documents\report.docx,InUse,False
+2024-12-01 10:25:10,modified,report.docx,C:\Users\Admin\Documents\report.docx,InUse,False
+2024-12-01 10:26:41,accessed,report.docx,C:\Users\Admin\Documents\report.docx,InUse,False
+2024-12-01 11:05:31,created,secret.txt,C:\Users\Admin\Desktop\secret.txt,Deleted,True
+2024-12-01 11:06:00,modified,secret.txt,C:\Users\Admin\Desktop\secret.txt,Deleted,True
+2024-12-01 11:06:05,accessed,secret.txt,C:\Users\Admin\Desktop\secret.txt,Deleted,True
+2024-11-27 09:16:44,created,image.png,C:\Users\Admin\Pictures\image.png,InUse,False
+2024-11-27 09:16:45,modified,image.png,C:\Users\Admin\Pictures\image.png,InUse,False
+2024-11-29 18:00:22,accessed,image.png,C:\Users\Admin\Pictures\image.png,InUse,False
+2024-11-30 13:01:10,created,notes.pdf,C:\Users\Admin\Documents\notes.pdf,InUse,False
+2024-11-30 13:04:31,modified,notes.pdf,C:\Users\Admin\Documents\notes.pdf,InUse,False
+2024-12-01 08:22:15,accessed,notes.pdf,C:\Users\Admin\Documents\notes.pdf,InUse,False

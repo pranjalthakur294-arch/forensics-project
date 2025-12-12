@@ -1,0 +1,5 @@
+RecordNumber,Filename,FullPath,Created,Modified,Accessed,EntryFlags,Size,InUse
+42,report.docx,C:\Users\Admin\Documents\report.docx,2024-12-01 10:21:55,2024-12-01 10:25:10,2024-12-01 10:26:41,InUse,24576,1
+43,secret.txt,C:\Users\Admin\Desktop\secret.txt,2024-12-01 11:05:31,2024-12-01 11:06:00,2024-12-01 11:06:05,Deleted,512,0
+44,image.png,C:\Users\Admin\Pictures\image.png,2024-11-27 09:16:44,2024-11-27 09:16:45,2024-11-29 18:00:22,InUse,102400,1
+45,notes.pdf,C:\Users\Admin\Documents\notes.pdf,2024-11-30 13:01:10,2024-11-30 13:04:31,2024-12-01 08:22:15,InUse,50432,1
