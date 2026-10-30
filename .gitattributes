@@ -1,0 +1,13 @@
+# Auto-detect text files and normalize line endings
+* text=auto
+
+# Explicit text diff configuration (resolves binary detection from legacy UTF-16 commits)
+*.md text diff
+.gitignore text diff
+*.py text diff
+*.csv text diff
+*.txt text diff
+
+# Binary assets
+*.pcap binary
+*.enc binary

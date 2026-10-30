@@ -1,0 +1,5 @@
+# Digital Forensics Portfolio — Global Dependencies
+pycryptodome>=3.20.0
+python-dateutil>=2.8.2
+scapy>=2.5.0
+pyshark>=0.6.0

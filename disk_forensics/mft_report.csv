@@ -1,5 +1,5 @@
-record,filename,fullpath,created,modified,accessed,flags,inuse,deleted
-42,report.docx,C:\Users\Admin\Documents\report.docx,2024-12-01 10:21:55,2024-12-01 10:25:10,2024-12-01 10:26:41,InUse,1,False
-43,secret.txt,C:\Users\Admin\Desktop\secret.txt,2024-12-01 11:05:31,2024-12-01 11:06:00,2024-12-01 11:06:05,Deleted,0,True
-44,image.png,C:\Users\Admin\Pictures\image.png,2024-11-27 09:16:44,2024-11-27 09:16:45,2024-11-29 18:00:22,InUse,1,False
-45,notes.pdf,C:\Users\Admin\Documents\notes.pdf,2024-11-30 13:01:10,2024-11-30 13:04:31,2024-12-01 08:22:15,InUse,1,False
+record,filename,fullpath,created,modified,accessed,size,flags,inuse,deleted
+42,report.docx,C:\Users\Admin\Documents\report.docx,2024-12-01 10:21:55,2024-12-01 10:25:10,2024-12-01 10:26:41,24576,InUse,1,False
+43,secret.txt,C:\Users\Admin\Desktop\secret.txt,2024-12-01 11:05:31,2024-12-01 11:06:00,2024-12-01 11:06:05,512,Deleted,0,True
+44,image.png,C:\Users\Admin\Pictures\image.png,2024-11-27 09:16:44,2024-11-27 09:16:45,2024-11-29 18:00:22,102400,InUse,1,False
+45,notes.pdf,C:\Users\Admin\Documents\notes.pdf,2024-11-30 13:01:10,2024-11-30 13:04:31,2024-12-01 08:22:15,50432,InUse,1,False

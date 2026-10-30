@@ -1,4 +1,4 @@
-timestamp,event,filename,original_path,recycle_name
-2024-12-01 12:15:22,deleted,report_old.docx,C:\Users\Admin\Documents,$R102.docx
-2024-12-01 11:10:45,deleted,secret.txt,C:\Users\Admin\Desktop,$R103.txt
-2024-11-29 20:44:10,deleted,holiday.jpg,C:\Users\Admin\Pictures,$R104.jpg
+timestamp,source_artifact,event,filename,size,original_path,recycle_name
+2024-12-01 12:15:22,RecycleBin,deleted,report_old.docx,23040,C:\Users\Admin\Documents,$R102.docx
+2024-12-01 11:10:45,RecycleBin,deleted,secret.txt,512,C:\Users\Admin\Desktop,$R103.txt
+2024-11-29 20:44:10,RecycleBin,deleted,holiday.jpg,409600,C:\Users\Admin\Pictures,$R104.jpg

@@ -1,13 +1,13 @@
-timestamp,event,filename,fullpath,flags,deleted
-2024-12-01 10:21:55,created,report.docx,C:\Users\Admin\Documents\report.docx,InUse,False
-2024-12-01 10:25:10,modified,report.docx,C:\Users\Admin\Documents\report.docx,InUse,False
-2024-12-01 10:26:41,accessed,report.docx,C:\Users\Admin\Documents\report.docx,InUse,False
-2024-12-01 11:05:31,created,secret.txt,C:\Users\Admin\Desktop\secret.txt,Deleted,True
-2024-12-01 11:06:00,modified,secret.txt,C:\Users\Admin\Desktop\secret.txt,Deleted,True
-2024-12-01 11:06:05,accessed,secret.txt,C:\Users\Admin\Desktop\secret.txt,Deleted,True
-2024-11-27 09:16:44,created,image.png,C:\Users\Admin\Pictures\image.png,InUse,False
-2024-11-27 09:16:45,modified,image.png,C:\Users\Admin\Pictures\image.png,InUse,False
-2024-11-29 18:00:22,accessed,image.png,C:\Users\Admin\Pictures\image.png,InUse,False
-2024-11-30 13:01:10,created,notes.pdf,C:\Users\Admin\Documents\notes.pdf,InUse,False
-2024-11-30 13:04:31,modified,notes.pdf,C:\Users\Admin\Documents\notes.pdf,InUse,False
-2024-12-01 08:22:15,accessed,notes.pdf,C:\Users\Admin\Documents\notes.pdf,InUse,False
+timestamp,source_artifact,event,filename,record,size,fullpath,flags,deleted
+2024-12-01 10:21:55,MFT,created,report.docx,42,24576,C:\Users\Admin\Documents\report.docx,InUse,False
+2024-12-01 10:25:10,MFT,modified,report.docx,42,24576,C:\Users\Admin\Documents\report.docx,InUse,False
+2024-12-01 10:26:41,MFT,accessed,report.docx,42,24576,C:\Users\Admin\Documents\report.docx,InUse,False
+2024-12-01 11:05:31,MFT,created,secret.txt,43,512,C:\Users\Admin\Desktop\secret.txt,Deleted,True
+2024-12-01 11:06:00,MFT,modified,secret.txt,43,512,C:\Users\Admin\Desktop\secret.txt,Deleted,True
+2024-12-01 11:06:05,MFT,accessed,secret.txt,43,512,C:\Users\Admin\Desktop\secret.txt,Deleted,True
+2024-11-27 09:16:44,MFT,created,image.png,44,102400,C:\Users\Admin\Pictures\image.png,InUse,False
+2024-11-27 09:16:45,MFT,modified,image.png,44,102400,C:\Users\Admin\Pictures\image.png,InUse,False
+2024-11-29 18:00:22,MFT,accessed,image.png,44,102400,C:\Users\Admin\Pictures\image.png,InUse,False
+2024-11-30 13:01:10,MFT,created,notes.pdf,45,50432,C:\Users\Admin\Documents\notes.pdf,InUse,False
+2024-11-30 13:04:31,MFT,modified,notes.pdf,45,50432,C:\Users\Admin\Documents\notes.pdf,InUse,False
+2024-12-01 08:22:15,MFT,accessed,notes.pdf,45,50432,C:\Users\Admin\Documents\notes.pdf,InUse,False

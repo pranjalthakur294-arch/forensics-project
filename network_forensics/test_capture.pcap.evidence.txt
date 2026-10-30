@@ -1,5 +1,10 @@
-Forensic Evidence Report
+=== Forensic Evidence Custody Report ===
 pcap_file: test_capture.pcap
+full_path: network_forensics/test_capture.pcap
 pcap_sha256: 6a06222888f7379b46d256d02aee66cf82e75c1b0a340dbf1f04f36eab047b78
-packets: 20
-generated_by: pcap_analyze_extended.py
+file_size_bytes: 5500
+total_packets: 20
+capture_start: 2025-12-11 16:52:41
+capture_end: 2025-12-11 16:52:46
+analyzed_utc: 2026-10-30T09:38:08.856178+00:00
+generator: pcap_analyze_extended.py

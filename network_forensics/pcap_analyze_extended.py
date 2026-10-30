@@ -1,126 +1,239 @@
-# pcap_analyze_extended.py
 """
-Extended PCAP analyzer (Scapy)
-- Loads a pcap
-- Prints top IPs and ports
-- Extracts DNS queries
-- Builds a timeline CSV (timestamp, src, dst, proto, len, info)
-- Computes SHA256 of the PCAP and writes an evidence file
-Usage:
-  python pcap_analyze_extended.py test_capture.pcap
-Produces:
-  - timeline.csv
-  - <pcap>.evidence.txt
+pcap_analyze_extended.py - Extended Forensic PCAP Analysis & Timeline Generator
+Part of the Digital Forensics Portfolio Toolset.
+
+Functionality:
+- Deep packet inspection with dual IPv4 and IPv6 support
+- Protocol distribution metrics
+- Top communicating IP addresses & conversation pairs
+- Port distribution (TCP and UDP)
+- Extracted DNS queries
+- Generates chronological packet timeline CSV (timestamp, src, dst, proto, len, info)
+- Generates SHA-256 forensic evidence metadata file (*.evidence.txt) for chain of custody
 """
 
-import sys, os, csv, hashlib
-from scapy.all import rdpcap, IP, TCP, UDP, DNS
+import argparse
+import csv
+import hashlib
+import os
+import sys
 from collections import Counter
-from datetime import datetime
+from datetime import datetime, timezone
+from typing import Dict, List, Tuple
 
-CHUNK = 8192
+try:
+    from scapy.all import rdpcap, IP, IPv6, TCP, UDP, DNS, ICMP, ARP
+except ImportError:
+    sys.exit("Error: Scapy is required. Install it using: pip install scapy")
 
-def sha256_file(path):
+CHUNK_SIZE = 64 * 1024
+
+
+def identify_protocol(p) -> str:
+    """Accurately identify packet protocol beyond payload names."""
+    if TCP in p:
+        return "TCP"
+    if UDP in p:
+        return "UDP"
+    if ICMP in p:
+        return "ICMP"
+    if p.haslayer("ICMPv6EchoRequest") or p.haslayer("ICMPv6EchoReply") or p.haslayer("ICMPv6"):
+        return "ICMPv6"
+    if ARP in p:
+        return "ARP"
+    if IP in p:
+        return f"IPv4-Proto-{p[IP].proto}"
+    if IPv6 in p:
+        return f"IPv6-NH-{p[IPv6].nh}"
+    return p.name
+
+
+def compute_sha256(filepath: str) -> str:
+    """Compute SHA-256 digest of a PCAP file in streaming chunks."""
     h = hashlib.sha256()
-    with open(path, "rb") as f:
-        for b in iter(lambda: f.read(CHUNK), b""):
-            h.update(b)
+    with open(filepath, "rb") as f:
+        while chunk := f.read(CHUNK_SIZE):
+            h.update(chunk)
     return h.hexdigest()
 
-def analyze(pcap_path):
+
+def analyze_extended(
+    pcap_path: str,
+    timeline_path: str = None,
+    evidence_path: str = None,
+    top_n: int = 10,
+) -> Dict:
+    """Perform extended forensic PCAP inspection, export timeline CSV, and generate evidence report."""
+    if not os.path.exists(pcap_path):
+        raise FileNotFoundError(f"PCAP file not found: {pcap_path}")
+
     pkts = rdpcap(pcap_path)
-    print(f"Loaded {len(pkts)} packets\n")
+    total_packets = len(pkts)
+    print(f"[+] Loaded {total_packets} packets from: {pcap_path}\n")
 
     ips = Counter()
+    conversation_pairs = Counter()
     ports = Counter()
-    dns_queries = []
-    timeline_rows = []
+    protocols = Counter()
+    dns_queries: List[str] = []
+    timeline_rows: List[Tuple[str, str, str, str, int, str]] = []
+
+    first_ts = None
+    last_ts = None
 
     for p in pkts:
-        ts = datetime.fromtimestamp(float(p.time)).isoformat(sep=' ')
-        length = len(p)
-        proto = p.lastlayer().name if p.lastlayer() is not None else "UNK"
+        pkt_time = float(p.time)
+        ts_str = datetime.fromtimestamp(pkt_time).strftime("%Y-%m-%d %H:%M:%S")
+        if first_ts is None:
+            first_ts = ts_str
+        last_ts = ts_str
 
-        src = dst = ""
+        length = len(p)
+        proto = identify_protocol(p)
+        protocols[proto] += 1
+
+        src = ""
+        dst = ""
         info = ""
 
+        # Handle both IPv4 and IPv6
         if IP in p:
             src = p[IP].src
             dst = p[IP].dst
             ips[src] += 1
-            ips[dst] += 0
+            ips[dst] += 1
+            conversation_pairs[tuple(sorted([src, dst]))] += 1
+        elif IPv6 in p:
+            src = p[IPv6].src
+            dst = p[IPv6].dst
+            ips[src] += 1
+            ips[dst] += 1
+            conversation_pairs[tuple(sorted([src, dst]))] += 1
 
+        # Protocol & Transport Layer Details
         if TCP in p:
             sport = p[TCP].sport
             dport = p[TCP].dport
             ports[sport] += 1
             ports[dport] += 1
-            info = f"TCP {sport}->{dport}"
-            # attempt to get HTTP payload heuristically (port 80)
-            if dport == 80 or sport == 80:
+            info = f"TCP {sport} -> {dport} [Flags: {p[TCP].flags}]"
+
+            # HTTP heuristic extraction on ports 80/8080 or raw payload
+            if dport in (80, 8080) or sport in (80, 8080):
                 try:
                     raw = bytes(p[TCP].payload)
                     if raw:
-                        # show start of payload (utf-8 best-effort)
-                        snippet = raw[:200].decode('utf-8', errors='replace').replace('\n',' ').replace('\r',' ')
-                        info += " | " + snippet
+                        first_line = raw[:150].decode("utf-8", errors="replace").split("\r\n")[0]
+                        info += f" | HTTP: {first_line}"
                 except Exception:
                     pass
+
         elif UDP in p:
             sport = p[UDP].sport
             dport = p[UDP].dport
             ports[sport] += 1
             ports[dport] += 1
-            info = f"UDP {sport}->{dport}"
-            # DNS
-            if p.haslayer(DNS) and p.getlayer(DNS).qd:
-                try:
-                    q = p.getlayer(DNS).qd.qname.decode()
-                    dns_queries.append(q)
-                    info += f" | DNS q: {q}"
-                except:
-                    pass
+            info = f"UDP {sport} -> {dport}"
+
+            # DNS Query extraction
+            if p.haslayer(DNS):
+                dns_layer = p.getlayer(DNS)
+                qd = getattr(dns_layer, "qd", None)
+                if qd:
+                    try:
+                        first_q = qd[0] if isinstance(qd, list) else qd
+                        qname = first_q.qname.decode("utf-8", errors="replace").rstrip(".")
+                        if qname and qname not in dns_queries:
+                            dns_queries.append(qname)
+                        info += f" | DNS Q: {qname}"
+                    except Exception:
+                        pass
         else:
             info = proto
 
-        timeline_rows.append((ts, src, dst, proto, length, info))
+        timeline_rows.append((ts_str, src, dst, proto, length, info))
 
-    # Print summaries
-    print("Top IPs:")
-    for ip, c in ips.most_common(10):
-        print(f"  {ip} -> {c}")
+    # Print summary statistics
+    print(f"--- Capture Overview ---")
+    print(f"  Total Packets:   {total_packets}")
+    print(f"  First Packet:    {first_ts or 'N/A'}")
+    print(f"  Last Packet:     {last_ts or 'N/A'}")
 
-    print("\nTop Ports:")
-    for port, c in ports.most_common(10):
-        print(f"  {port} -> {c}")
+    print(f"\n--- Protocol Distribution ---")
+    for pr, count in protocols.most_common():
+        pct = (count / total_packets) * 100 if total_packets else 0
+        print(f"  {pr:<8}: {count:>5} packets ({pct:.1f}%)")
 
-    print("\nDNS Queries (sample):")
-    for q in dns_queries[:20]:
-        print(" ", q)
+    print(f"\n--- Top {top_n} Communicating IP Addresses ---")
+    for ip, count in ips.most_common(top_n):
+        print(f"  {ip:<42} -> {count:>4} packets")
 
-    # Write timeline CSV
-    csv_path = os.path.splitext(pcap_path)[0] + "_timeline.csv"
-    with open(csv_path, "w", newline="", encoding="utf-8") as cf:
+    print(f"\n--- Top Communicating Conversations (IP Pairs) ---")
+    for pair, count in conversation_pairs.most_common(top_n):
+        print(f"  {pair[0]} <---> {pair[1]} : {count} packets")
+
+    print(f"\n--- Top {top_n} Transport Ports (TCP/UDP) ---")
+    for port, count in ports.most_common(top_n):
+        print(f"  Port {port:<6} -> {count:>4} hits")
+
+    print(f"\n--- DNS Queries Identified ({len(dns_queries)} unique) ---")
+    for q in dns_queries[:top_n]:
+        print(f"  Query: {q}")
+
+    # Write Timeline CSV
+    if not timeline_path:
+        timeline_path = os.path.splitext(pcap_path)[0] + "_timeline.csv"
+    with open(timeline_path, "w", newline="", encoding="utf-8") as cf:
         writer = csv.writer(cf)
-        writer.writerow(["timestamp","src","dst","proto","length","info"])
+        writer.writerow(["timestamp", "src", "dst", "proto", "length", "info"])
         for row in timeline_rows:
             writer.writerow(row)
-    print(f"\nTimeline CSV written: {csv_path}")
+    print(f"\n[+] Timeline CSV written to: {timeline_path}")
 
-    # Write evidence file with SHA256
-    sha = sha256_file(pcap_path)
-    ev_path = pcap_path + ".evidence.txt"
-    with open(ev_path, "w", encoding="utf-8") as ef:
-        ef.write("Forensic Evidence Report\n")
-        ef.write(f"pcap_file: {pcap_path}\n")
-        ef.write(f"pcap_sha256: {sha}\n")
-        ef.write(f"packets: {len(pkts)}\n")
-        ef.write(f"generated_by: pcap_analyze_extended.py\n")
-    print(f"Evidence file written: {ev_path}")
-    print(f"PCAP SHA256: {sha}")
+    # Write Evidence Report
+    sha256_hash = compute_sha256(pcap_path)
+    file_size = os.path.getsize(pcap_path)
+    if not evidence_path:
+        evidence_path = pcap_path + ".evidence.txt"
+
+    with open(evidence_path, "w", encoding="utf-8") as ef:
+        ef.write("=== Forensic Evidence Custody Report ===\n")
+        ef.write(f"pcap_file: {os.path.basename(pcap_path)}\n")
+        ef.write(f"full_path: {os.path.abspath(pcap_path)}\n")
+        ef.write(f"pcap_sha256: {sha256_hash}\n")
+        ef.write(f"file_size_bytes: {file_size}\n")
+        ef.write(f"total_packets: {total_packets}\n")
+        ef.write(f"capture_start: {first_ts or 'N/A'}\n")
+        ef.write(f"capture_end: {last_ts or 'N/A'}\n")
+        ef.write(f"analyzed_utc: {datetime.now(timezone.utc).isoformat()}\n")
+        ef.write("generator: pcap_analyze_extended.py\n")
+
+    print(f"[+] Evidence file written to: {evidence_path}")
+    print(f"    PCAP SHA-256: {sha256_hash}")
+
+    return {
+        "pcap_sha256": sha256_hash,
+        "total_packets": total_packets,
+        "protocols": dict(protocols),
+        "top_ips": ips.most_common(top_n),
+        "dns_queries": dns_queries,
+        "timeline_file": timeline_path,
+        "evidence_file": evidence_path,
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Extended Forensic PCAP Analyzer — Timeline Generation & Evidence Hashing"
+    )
+    parser.add_argument("pcap", help="Path to PCAP capture file")
+    parser.add_argument("-t", "--timeline", help="Custom output path for timeline CSV")
+    parser.add_argument("-e", "--evidence", help="Custom output path for .evidence.txt file")
+    parser.add_argument("-n", "--top", type=int, default=10, help="Number of top entries to display (default: 10)")
+
+    args = parser.parse_args()
+    analyze_extended(args.pcap, timeline_path=args.timeline, evidence_path=args.evidence, top_n=args.top)
+
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: python pcap_analyze_extended.py <pcapfile>")
-        sys.exit(1)
-    analyze(sys.argv[1])
+    main()

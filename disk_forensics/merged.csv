@@ -1,16 +1,16 @@
-t,i,m,e,s,a,p,v,n,f,l,u,h,g,d,o,r,_,c,y
-,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,,,,,,
+timestamp,source_artifact,event,filename,record,size,fullpath,original_path,recycle_name,flags,deleted
+2024-11-27 09:16:44,MFT,created,image.png,44,102400,C:\Users\Admin\Pictures\image.png,,,InUse,False
+2024-11-27 09:16:45,MFT,modified,image.png,44,102400,C:\Users\Admin\Pictures\image.png,,,InUse,False
+2024-11-29 18:00:22,MFT,accessed,image.png,44,102400,C:\Users\Admin\Pictures\image.png,,,InUse,False
+2024-11-29 20:44:10,RecycleBin,deleted,holiday.jpg,,409600,,C:\Users\Admin\Pictures,$R104.jpg,,
+2024-11-30 13:01:10,MFT,created,notes.pdf,45,50432,C:\Users\Admin\Documents\notes.pdf,,,InUse,False
+2024-11-30 13:04:31,MFT,modified,notes.pdf,45,50432,C:\Users\Admin\Documents\notes.pdf,,,InUse,False
+2024-12-01 08:22:15,MFT,accessed,notes.pdf,45,50432,C:\Users\Admin\Documents\notes.pdf,,,InUse,False
+2024-12-01 10:21:55,MFT,created,report.docx,42,24576,C:\Users\Admin\Documents\report.docx,,,InUse,False
+2024-12-01 10:25:10,MFT,modified,report.docx,42,24576,C:\Users\Admin\Documents\report.docx,,,InUse,False
+2024-12-01 10:26:41,MFT,accessed,report.docx,42,24576,C:\Users\Admin\Documents\report.docx,,,InUse,False
+2024-12-01 11:05:31,MFT,created,secret.txt,43,512,C:\Users\Admin\Desktop\secret.txt,,,Deleted,True
+2024-12-01 11:06:00,MFT,modified,secret.txt,43,512,C:\Users\Admin\Desktop\secret.txt,,,Deleted,True
+2024-12-01 11:06:05,MFT,accessed,secret.txt,43,512,C:\Users\Admin\Desktop\secret.txt,,,Deleted,True
+2024-12-01 11:10:45,RecycleBin,deleted,secret.txt,,512,,C:\Users\Admin\Desktop,$R103.txt,,
+2024-12-01 12:15:22,RecycleBin,deleted,report_old.docx,,23040,,C:\Users\Admin\Documents,$R102.docx,,
